@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34601.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Cozmos-test", ".", "{7381A5F4-8643-4523-9861-588B7F4BC4A7}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_64920"
+		Debug.AspNetCompiler.PhysicalPath = "..\Cozmos-test\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_64920\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_64920"
+		Release.AspNetCompiler.PhysicalPath = "..\Cozmos-test\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_64920\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "64920"
+		SlnRelativePath = "..\Cozmos-test\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7381A5F4-8643-4523-9861-588B7F4BC4A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7381A5F4-8643-4523-9861-588B7F4BC4A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB349E96-2462-48E8-B116-FFC25CA272D8}
+	EndGlobalSection
+EndGlobal
