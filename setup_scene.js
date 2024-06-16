@@ -7,6 +7,7 @@ let renderer = null;
 let pointer = new THREE.Vector2();
 let meshes = [];
 let control = null;
+let currentSelection = null;
 
 function setup() {
 	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
@@ -88,7 +89,6 @@ function addImage(URL) {
 			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
 			const material = new THREE.MeshBasicMaterial({ map: texture, map: texture });
 			const mesh = new THREE.Mesh(geometry, material);
-			mesh.name = "img";
 			scene.add(mesh);
 			meshes.push(mesh);
 		},
@@ -119,20 +119,7 @@ function add() {
 }
 
 function animation(time) {
-
-	//for (let i = 0; i < meshes.length; i++) {
-	//	meshes[i].rotation.x = time / 2000;
-	//	meshes[i].rotation.y = time / 1000;
-
-	//}
-
 	renderer.render(scene, camera);
-}
-
-function render() {
-
-	renderer.render(scene, currentCamera);
-
 }
 
 function onWindowResize() {
@@ -148,8 +135,6 @@ function onPointerMove(event) {
 }
 
 
-
-
 function pick(event) {
 	event.preventDefault();
 
@@ -158,10 +143,14 @@ function pick(event) {
 
 	const intersects = raycaster.intersectObjects(meshes);
 	if (intersects.length > 0) {
+		currentSelection = intersects[0].object;
 		control.attach(intersects[0].object);
 		scene.add(control);
 		control.setMode('translate');
 		control.addEventListener('change', render);
+	} else {
+		currentSelection = null;
+		control.detach();
 	}
 
 }
