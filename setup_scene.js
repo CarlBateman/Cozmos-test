@@ -1,45 +1,61 @@
 ﻿import * as THREE from 'three';
 
-const scene = {
-  camera: null,
-  scene: null,
-  renderer: null,
-  meshes: [],
+let camera = null;
+let scene = null;
+let renderer = null;
+let meshes = [];
 
-  setup: function() {
-    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
-    this.camera.position.z = 1;
+function setup() {
+	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
+	camera.position.z = 1;
 
-    this.scene = new THREE.Scene();
+	scene = new THREE.Scene();
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setClearColor(0x000040, 1);
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setAnimationLoop(this.animation.bind(this));
-    document.body.appendChild(this.renderer.domElement);
-  },
+	renderer = new THREE.WebGLRenderer({ antialias: true });
+	renderer.setClearColor(0x000040, 1);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setAnimationLoop(animation.bind(this));
+	document.body.appendChild(renderer.domElement);
+}
 
-  add: function () {
-    const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const material = new THREE.MeshNormalMaterial();
+function add() {
+	const videoElement = document.createElement("video");
+	videoElement.crossOrigin = "anonymous";
+	videoElement.src = "https://i.imgur.com/zRgJ6in.mp4";
+	videoElement.load();
+	videoElement.controls = true;
+	videoElement.play();
+	videoElement.addEventListener("loadedmetadata", function (e) {
+		const ratio = this.videoHeight / this.videoWidth;
+		let texture = new THREE.VideoTexture(videoElement);
 
-    const mesh = new THREE.Mesh(geometry, material);
-    this.scene.add(mesh);
-    this.meshes.push(mesh);
-  },
+		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+		//const material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
+		const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
 
-  animation: function (time) {
+		const mesh = new THREE.Mesh(geometry, material);
+		//mesh.rotateX(90);
+		//mesh.rotateY(90);
 
-    for (let i = 0; i < this.meshes.length; i++) {
-			this.meshes[i].rotation.x = time / 2000;
-			this.meshes[i].rotation.y = time / 1000;
+		scene.add(mesh);
+		meshes.push(mesh);
+	}, false);
 
-		}
+	//document.body.appendChild(videoElement);
 
-    this.renderer.render(this.scene, this.camera);
+}
 
-  }
-};
+function animation(time) {
 
+	//for (let i = 0; i < meshes.length; i++) {
+	//	meshes[i].rotation.x = time / 2000;
+	//	meshes[i].rotation.y = time / 1000;
 
-export { scene };
+	//}
+
+	renderer.render(scene, camera);
+}
+
+let temp = { setup, add };
+
+export { temp as scene };

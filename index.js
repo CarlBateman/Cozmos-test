@@ -2,5 +2,8 @@
 
 scene.setup();
 
-scene.add();
+
+let btnAddVideo = document.getElementById('button');
+btnAddVideo.addEventListener('click', scene.add);
+//scene.add();
 // add box
