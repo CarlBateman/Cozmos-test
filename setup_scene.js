@@ -18,30 +18,43 @@ function setup() {
 	document.body.appendChild(renderer.domElement);
 }
 
+function isValidUrl(string) {
+	try {
+		new URL(string);
+		return true;
+	} catch (err) {
+		return false;
+	}
+}
+
 function add() {
-	const videoElement = document.createElement("video");
-	videoElement.crossOrigin = "anonymous";
-	videoElement.src = "https://i.imgur.com/zRgJ6in.mp4";
-	videoElement.load();
-	videoElement.controls = true;
-	videoElement.play();
-	videoElement.addEventListener("loadedmetadata", function (e) {
-		const ratio = this.videoHeight / this.videoWidth;
-		let texture = new THREE.VideoTexture(videoElement);
+	const txtURL = document.getElementById("txtURL").value;
+	if (isValidUrl(txtURL)) {
+		const videoElement = document.createElement("video");
+		videoElement.crossOrigin = "anonymous";
+		//videoElement.src = "https://i.imgur.com/zRgJ6in.mp4";
+		videoElement.src = txtURL;
+		videoElement.load();
+		videoElement.controls = true;
+		videoElement.play();
+		videoElement.addEventListener("loadedmetadata", function (e) {
+			const ratio = this.videoHeight / this.videoWidth;
+			let texture = new THREE.VideoTexture(videoElement);
 
-		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
-		//const material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
-		const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
+			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+			//const material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
+			const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
 
-		const mesh = new THREE.Mesh(geometry, material);
-		//mesh.rotateX(90);
-		//mesh.rotateY(90);
+			const mesh = new THREE.Mesh(geometry, material);
+			//mesh.rotateX(90);
+			//mesh.rotateY(90);
 
-		scene.add(mesh);
-		meshes.push(mesh);
-	}, false);
+			scene.add(mesh);
+			meshes.push(mesh);
+		}, false);
 
-	//document.body.appendChild(videoElement);
+	}
+
 
 }
 
