@@ -1,9 +1,12 @@
 ﻿import * as THREE from 'three';
+import * as TransformControls from 'TransformControls';
 
 let camera = null;
 let scene = null;
 let renderer = null;
+let pointer = new THREE.Vector2();
 let meshes = [];
+let control = null;
 
 function setup() {
 	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
@@ -14,8 +17,10 @@ function setup() {
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setClearColor(0x000040, 1);
 	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.setAnimationLoop(animation.bind(this));
+	renderer.setAnimationLoop(animation);
 	document.body.appendChild(renderer.domElement);
+
+	control = new TransformControls.TransformControls(camera, renderer.domElement);
 }
 
 function isValidUrl(string) {
@@ -83,7 +88,7 @@ function addImage(URL) {
 			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
 			const material = new THREE.MeshBasicMaterial({ map: texture, map: texture });
 			const mesh = new THREE.Mesh(geometry, material);
-
+			mesh.name = "img";
 			scene.add(mesh);
 			meshes.push(mesh);
 		},
@@ -111,8 +116,6 @@ function add() {
 			default:
 		}
 	}
-
-
 }
 
 function animation(time) {
@@ -126,6 +129,43 @@ function animation(time) {
 	renderer.render(scene, camera);
 }
 
-let temp = { setup, add };
+function render() {
+
+	renderer.render(scene, currentCamera);
+
+}
+
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onPointerMove(event) {
+	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+}
+
+
+
+
+function pick(event) {
+	event.preventDefault();
+
+	const raycaster = new THREE.Raycaster();
+	raycaster.setFromCamera(pointer, camera);
+
+	const intersects = raycaster.intersectObjects(meshes);
+	if (intersects.length > 0) {
+		control.attach(intersects[0].object);
+		scene.add(control);
+		control.setMode('translate');
+		control.addEventListener('change', render);
+	}
+
+}
+
+let temp = { setup, add, pick, onWindowResize, onPointerMove };
 
 export { temp as scene };
