@@ -1,3 +1,66 @@
 ﻿body {
 	margin: 0;
 }
+.selectBox {
+	border: 1px solid #55aaff;
+	background-color: rgba(75, 160, 255, 0.3);
+	position: fixed;
+}
+
+#control_options {
+	position: absolute;
+	top: 0px;
+	width: 300px;
+	padding: 10px;
+	box-sizing: border-box;
+	text-align: left;
+	right: 0;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	/*pointer-events: none;*/
+	z-index: 1; /* TODO Solve this in HTML */
+	background-color: rgba(255, 255, 255, 0.75);
+	border-radius: 5px;
+	border-style: groove;
+}
+
+#info {
+	position: absolute;
+	color: #fff;
+	top: 0px;
+	width: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	text-align: center;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	z-index: 1; /* TODO Solve this in HTML */
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+input[type=radio] {
+	vertical-align: middle;
+	float: right;
+}
+
+input[type=checkbox] {
+	vertical-align: middle;
+	float: right;
+}
+
+label.for-radio {
+	display: block;
+	overflow: hidden;
+	width: 100px;
+}
+
+label.for-check {
+	display: block;
+	overflow: hidden;
+	width: 200px;
+}
