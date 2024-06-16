@@ -134,6 +134,15 @@ function onPointerMove(event) {
 	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
 }
 
+function onkeyup(e) {
+	if (e.key == "Delete" || e.key == "Backspace") {
+		if (currentSelection != null) {
+			control.detach();
+			currentSelection.visible = false;
+			currentSelection = null;
+		}
+	}
+}
 
 function pick(event) {
 	event.preventDefault();
@@ -149,12 +158,12 @@ function pick(event) {
 		control.setMode('translate');
 		control.addEventListener('change', render);
 	} else {
-		currentSelection = null;
 		control.detach();
+		currentSelection = null;
 	}
 
 }
 
-let temp = { setup, add, pick, onWindowResize, onPointerMove };
+let temp = { setup, add, pick, onWindowResize, onPointerMove, onkeyup };
 
 export { temp as scene };
