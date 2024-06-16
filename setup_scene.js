@@ -27,32 +27,89 @@ function isValidUrl(string) {
 	}
 }
 
-function add() {
-	const txtURL = document.getElementById("txtURL").value;
-	if (isValidUrl(txtURL)) {
-		const videoElement = document.createElement("video");
-		videoElement.crossOrigin = "anonymous";
-		//videoElement.src = "https://i.imgur.com/zRgJ6in.mp4";
-		videoElement.src = txtURL;
-		videoElement.load();
-		videoElement.controls = true;
-		videoElement.play();
-		videoElement.addEventListener("loadedmetadata", function (e) {
-			const ratio = this.videoHeight / this.videoWidth;
-			let texture = new THREE.VideoTexture(videoElement);
+function getType(URL) {
+	const extension = URL.split('.').pop();
+	switch (extension) {
+		case "mp4":
+		case "mov":
+			return "video";
+	}
+
+	switch (extension) {
+		case "jpg":
+		case "jpeg":
+		case "gif":
+		case "bmp":
+		case "img":
+			return "image";
+	}
+
+
+	return "invalid";
+}
+
+function addVideo(URL) {
+	const videoElement = document.createElement("video");
+	videoElement.crossOrigin = "anonymous";
+	videoElement.src = URL;
+	videoElement.load();
+	videoElement.controls = true;
+	videoElement.play();
+	videoElement.addEventListener("loadedmetadata", function (e) {
+		const ratio = this.videoHeight / this.videoWidth;
+		let texture = new THREE.VideoTexture(videoElement);
+
+		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+		const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
+
+		const mesh = new THREE.Mesh(geometry, material);
+
+		scene.add(mesh);
+		meshes.push(mesh);
+	}, false);
+}
+
+function addImage(URL) {
+	const loader = new THREE.TextureLoader();
+
+	// load a resource
+	loader.load(
+		URL,
+
+		// onLoad callback
+		function (texture) {
+			const ratio = texture.image.height / texture.image.width;
 
 			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
-			//const material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
-			const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
-
+			const material = new THREE.MeshBasicMaterial({ map: texture, map: texture });
 			const mesh = new THREE.Mesh(geometry, material);
-			//mesh.rotateX(90);
-			//mesh.rotateY(90);
 
 			scene.add(mesh);
 			meshes.push(mesh);
-		}, false);
+		},
 
+		// onProgress callback currently not supported
+		undefined,
+
+		// onError callback
+		function (err) {
+			console.error('An error happened.');
+		}
+	);
+}
+
+function add() {
+	const txtURL = document.getElementById("txtURL").value;
+	if (isValidUrl(txtURL)) {
+		switch (getType(txtURL)) {
+			case "video":
+				addVideo(txtURL)
+				break;
+			case "image":
+				addImage(txtURL)
+				break;
+			default:
+		}
 	}
 
 
