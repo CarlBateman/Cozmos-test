@@ -6,6 +6,7 @@ let scene = null;
 let renderer = null;
 let pointer = new THREE.Vector2();
 let meshes = [];
+let inactiveMeshes = [];
 let control = null;
 let currentSelection = null;
 
@@ -138,9 +139,15 @@ function onkeyup(e) {
 	if (e.key == "Delete" || e.key == "Backspace") {
 		if (currentSelection != null) {
 			control.detach();
+
+			const index = meshes.indexOf(currentSelection);
+			meshes.splice(index, 1);
+			inactiveMeshes.push(currentSelection);
+
 			currentSelection.visible = false;
 			currentSelection = null;
 		}
+		return;
 	}
 }
 
@@ -156,7 +163,6 @@ function pick(event) {
 		control.attach(intersects[0].object);
 		scene.add(control);
 		control.setMode('translate');
-		control.addEventListener('change', render);
 	} else {
 		control.detach();
 		currentSelection = null;
