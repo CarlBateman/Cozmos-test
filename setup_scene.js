@@ -1,5 +1,5 @@
 ﻿import * as THREE from 'three';
-import * as TransformControls from 'TransformControls';
+import { TransformControls } from 'TransformControls';
 
 let camera = null;
 let scene = null;
@@ -22,7 +22,7 @@ function setup() {
 	renderer.setAnimationLoop(animation);
 	document.body.appendChild(renderer.domElement);
 
-	control = new TransformControls.TransformControls(camera, renderer.domElement);
+	control = new TransformControls(camera, renderer.domElement);
 }
 
 function isValidUrl(string) {
