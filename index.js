@@ -8,8 +8,9 @@ btnAddVideo.addEventListener('click', scene.add);
 
 window.addEventListener('resize', scene.onWindowResize);
 document.addEventListener('pointermove', scene.onPointerMove);
-document.addEventListener('mousedown', scene.pick);
-document.addEventListener('keyup', scene.onkeyup);
+document.addEventListener('mousedown', scene.onMouseDown);
+document.addEventListener('mouseup', scene.onMouseUp);
+document.addEventListener('keyup', scene.onKeyUp);
 
 //scene.add();
 // add box
