@@ -160,9 +160,28 @@ function pick(event) {
 	const intersects = raycaster.intersectObjects(meshes);
 	if (intersects.length > 0) {
 		currentSelection = intersects[0].object;
-		control.attach(intersects[0].object);
+		control.attach(currentSelection);
 		scene.add(control);
 		control.setMode('translate');
+
+		//// construct plane perpendicular to camera forward passing through current selection
+		//let fwd = new THREE.Vector3();
+		//camera.getWorldDirection(fwd);
+
+		//// vector from camera to current selection
+		//let d = camera.position.sub(currentSelection.position);
+		//// project onto forward vector
+		//let p = d.projectOnVector(fwd);
+
+		//let plane = new THREE.Plane(fwd, d.length);
+
+		//const geometry = new THREE.SphereGeometry(0.1);
+		//const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+		//const mesh = new THREE.Mesh(geometry, material);
+
+		//scene.add(mesh);
+
+
 	} else {
 		control.detach();
 		currentSelection = null;
