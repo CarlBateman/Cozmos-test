@@ -182,18 +182,6 @@ function onWindowResize() {
 }
 
 function onKeyDown(e) {
-//	if (e.key == "Delete" || e.key == "Backspace") {
-//		if (currentSelection != null) {
-
-//			const index = meshes.indexOf(currentSelection);
-//			meshes.splice(index, 1);
-//			inactiveMeshes.push(currentSelection);
-
-//			currentSelection.visible = false;
-//			currentSelection = null;
-//		}
-//		return;
-//	}
 	shiftKey = e.shiftKey;
 	ctrlKey = e.ctrlKey;
 	altKey = e.altKey;
@@ -264,9 +252,8 @@ function onMouseDown(event) {
 		//control.detach();
 		currentSelection = null;
 	}
-
-
 }
+
 function onPointerMove(event) {
 	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
 	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -290,7 +277,6 @@ function onPointerMove(event) {
 		grabPoint = intersect;
 	}
 }
-
 
 let temp = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
 
