@@ -18,6 +18,7 @@ let grabPoint = null;
 let plane = new THREE.Plane();
 const raycaster = new THREE.Raycaster();
 let composer, effectFXAA, outlinePass;
+let shiftKey = false, ctrlKey = false, altKey = false;
 
 
 
@@ -180,7 +181,28 @@ function onWindowResize() {
 	effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
 }
 
+function onKeyDown(e) {
+//	if (e.key == "Delete" || e.key == "Backspace") {
+//		if (currentSelection != null) {
+
+//			const index = meshes.indexOf(currentSelection);
+//			meshes.splice(index, 1);
+//			inactiveMeshes.push(currentSelection);
+
+//			currentSelection.visible = false;
+//			currentSelection = null;
+//		}
+//		return;
+//	}
+	shiftKey = e.shiftKey;
+	ctrlKey = e.ctrlKey;
+	altKey = e.altKey;
+}
+
 function onKeyUp(e) {
+	shiftKey = e.shiftKey;
+	ctrlKey = e.ctrlKey;
+	altKey = e.altKey;
 	if (e.key == "Delete" || e.key == "Backspace") {
 		if (currentSelection != null) {
 
@@ -250,7 +272,6 @@ function onPointerMove(event) {
 	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
 	if (dragging) {
-
 		// cast ray to find new grab point
 		const intersect = new THREE.Vector3();
 		raycaster.setFromCamera(pointer, camera);
@@ -258,13 +279,19 @@ function onPointerMove(event) {
 
 		let change = grabPoint;
 		change.sub(intersect);
-		currentSelection.position.sub(change);
 
+		if (ctrlKey) {
+			currentSelection.rotateY(change.x);
+			currentSelection.rotateX(change.y);
+
+		} else {
+			currentSelection.position.sub(change);
+		}
 		grabPoint = intersect;
 	}
 }
 
 
-let temp = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp };
+let temp = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
 
 export { temp as scene };

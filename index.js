@@ -11,6 +11,7 @@ document.addEventListener('pointermove', scene.onPointerMove);
 document.addEventListener('mousedown', scene.onMouseDown);
 document.addEventListener('mouseup', scene.onMouseUp);
 document.addEventListener('keyup', scene.onKeyUp);
+document.addEventListener('keydown', scene.onKeyDown);
 
 //scene.add();
 // add box
