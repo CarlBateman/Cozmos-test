@@ -251,6 +251,7 @@ function onMouseDown(event) {
 	} else {
 		//control.detach();
 		currentSelection = null;
+		outlinePass.selectedObjects = [];
 	}
 }
 
