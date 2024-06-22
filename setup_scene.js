@@ -17,7 +17,9 @@ const raycaster = new THREE.Raycaster();
 
 function setup() {
 	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
-	camera.position.z = 1;
+	camera.position.z = 1.1;
+	//camera.position.x = 10.9;
+	//camera.rotateY(-0.2);
 
 	scene = new THREE.Scene();
 
@@ -94,7 +96,8 @@ function addImage(URL) {
 			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
 			const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
 			const mesh = new THREE.Mesh(geometry, material);
-			mesh.position.z = -0.1;
+			mesh.position.z = 0.1;
+			//mesh.position.x = 10;
 			//mesh.position.y = 1;
 			scene.add(mesh);
 			meshes.push(mesh);
@@ -170,12 +173,8 @@ function onMouseDown(event) {
 		let fwd = new THREE.Vector3();
 		camera.getWorldDirection(fwd);
 
-		// get vector from camera to object
-		let d = new THREE.Vector3();
-		d.subVectors(camera.position, currentSelection.position);
-
-		// project onto forward vector
-		d.sub(camera.position);
+		let d = currentSelection.position.clone();
+		d.negate();
 		d.projectOnVector(fwd);
 
 		// get signed distance
