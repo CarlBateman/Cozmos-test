@@ -51,15 +51,15 @@ function setup() {
 
 	composer.addPass(outlinePass);
 
-	//const textureLoader = new THREE.TextureLoader();
-	//textureLoader.load('textures/tri_pattern.jpg', function (texture) {
+	const textureLoader = new THREE.TextureLoader();
+	textureLoader.load('textures/tri_pattern.jpg', function (texture) {
 
-	//	outlinePass.patternTexture = texture;
-	//	texture.wrapS = THREE.RepeatWrapping;
-	//	texture.wrapT = THREE.RepeatWrapping;
-	//	outlinePass.usePatternTexture = true;
+		outlinePass.patternTexture = texture;
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.wrapT = THREE.RepeatWrapping;
+		outlinePass.usePatternTexture = true;
 
-	//});
+	});
 
 	const outputPass = new OutputPass();
 	composer.addPass(outputPass);
