@@ -7,7 +7,6 @@ let renderer = null;
 let pointer = new THREE.Vector2();
 let meshes = [];
 let inactiveMeshes = [];
-let control = null;
 let currentSelection = null;
 let dragging = false;
 let grabPoint = null;
@@ -28,9 +27,6 @@ function setup() {
 	renderer.setAnimationLoop(animation);
 	document.body.appendChild(renderer.domElement);
 
-
-
-	//control = new TransformControls(camera, renderer.domElement);
 }
 
 function isValidUrl(string) {
@@ -98,6 +94,8 @@ function addImage(URL) {
 			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
 			const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
 			const mesh = new THREE.Mesh(geometry, material);
+			mesh.position.z = -0.1;
+			//mesh.position.y = 1;
 			scene.add(mesh);
 			meshes.push(mesh);
 		},
@@ -137,40 +135,9 @@ function onWindowResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function onPointerMove(event) {
-	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-	if (dragging) {
-		// construct plane perpendicular to camera forward passing through current selection
-		let fwd = new THREE.Vector3();
-		camera.getWorldDirection(fwd);
-
-		// vector from camera to current selection
-		let d = new THREE.Vector3();
-		d.subVectors(currentSelection.position, camera.position);
-
-		// project onto forward vector
-		let p = d.projectOnVector(fwd);
-		p.add(camera.position);
-
-		// cast ray to find new grab point
-		const intersect = new THREE.Vector3();
-		raycaster.setFromCamera(pointer, camera);
-		raycaster.ray.intersectPlane(plane, intersect);
-
-		let change = grabPoint;
-		change.sub(intersect);
-		currentSelection.position.sub(change);
-
-		grabPoint = intersect;
-	}
-}
-
 function onKeyUp(e) {
 	if (e.key == "Delete" || e.key == "Backspace") {
 		if (currentSelection != null) {
-			//control.detach();
 
 			const index = meshes.indexOf(currentSelection);
 			meshes.splice(index, 1);
@@ -203,14 +170,19 @@ function onMouseDown(event) {
 		let fwd = new THREE.Vector3();
 		camera.getWorldDirection(fwd);
 
-		// vector from camera to current selection
+		// get vector from camera to object
 		let d = new THREE.Vector3();
-		d.subVectors(currentSelection.position, camera.position);
+		d.subVectors(camera.position, currentSelection.position);
 
 		// project onto forward vector
-		let p = d.projectOnVector(fwd);
-		p.add(camera.position);
-		plane.set(fwd, p.length());
+		d.sub(camera.position);
+		d.projectOnVector(fwd);
+
+		// get signed distance
+		let sd = d.dot(fwd);
+
+		// set plane
+		plane.set(fwd, sd);
 
 		// cast ray to find grab point
 		const intersect = new THREE.Vector3();
@@ -231,6 +203,25 @@ function onMouseDown(event) {
 
 
 }
+function onPointerMove(event) {
+	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+	if (dragging) {
+
+		// cast ray to find new grab point
+		const intersect = new THREE.Vector3();
+		raycaster.setFromCamera(pointer, camera);
+		raycaster.ray.intersectPlane(plane, intersect);
+
+		let change = grabPoint;
+		change.sub(intersect);
+		currentSelection.position.sub(change);
+
+		grabPoint = intersect;
+	}
+}
+
 
 let temp = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp };
 
