@@ -1,9 +1,14 @@
 import * as THREE from 'three';
 import { TransformControls } from 'TransformControls';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
-let camera = null;
-let scene = null;
-let renderer = null;
+
+let camera, scene, renderer;
 let pointer = new THREE.Vector2();
 let meshes = [];
 let inactiveMeshes = [];
@@ -12,6 +17,7 @@ let dragging = false;
 let grabPoint = null;
 let plane = new THREE.Plane();
 const raycaster = new THREE.Raycaster();
+let composer, effectFXAA, outlinePass;
 
 
 
@@ -28,7 +34,39 @@ function setup() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setAnimationLoop(animation);
 	document.body.appendChild(renderer.domElement);
+	//window.addEventListener('resize', scene.onWindowResize);
 
+
+	// postprocessing
+
+	composer = new EffectComposer(renderer);
+
+	const renderPass = new RenderPass(scene, camera);
+	composer.addPass(renderPass);
+
+	outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+	//outlinePass.edgeStrength = 10;
+	outlinePass.edgeGlow = 4;
+	//outlinePass.edgeThickness = 4;
+
+	composer.addPass(outlinePass);
+
+	//const textureLoader = new THREE.TextureLoader();
+	//textureLoader.load('textures/tri_pattern.jpg', function (texture) {
+
+	//	outlinePass.patternTexture = texture;
+	//	texture.wrapS = THREE.RepeatWrapping;
+	//	texture.wrapT = THREE.RepeatWrapping;
+	//	outlinePass.usePatternTexture = true;
+
+	//});
+
+	const outputPass = new OutputPass();
+	composer.addPass(outputPass);
+
+	effectFXAA = new ShaderPass(FXAAShader);
+	effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+	composer.addPass(effectFXAA);
 }
 
 function isValidUrl(string) {
@@ -129,6 +167,7 @@ function add() {
 
 function animation(time) {
 	renderer.render(scene, camera);
+	composer.render();
 }
 
 function onWindowResize() {
@@ -136,6 +175,9 @@ function onWindowResize() {
 	camera.updateProjectionMatrix();
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	composer.setSize(window.innerWidth, window.innerHeight);
+
+	effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
 }
 
 function onKeyUp(e) {
@@ -168,6 +210,7 @@ function onMouseDown(event) {
 		dragging = true;
 
 		currentSelection = intersects[0].object;
+		outlinePass.selectedObjects = [currentSelection];
 
 		// construct plane perpendicular to camera forward passing through current selection
 		let fwd = new THREE.Vector3();
