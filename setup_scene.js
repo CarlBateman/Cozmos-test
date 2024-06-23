@@ -135,7 +135,7 @@ function addImage(URL) {
 			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
 			const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
 			const mesh = new THREE.Mesh(geometry, material);
-			mesh.position.z = 0.1;
+			//mesh.position.z = 0.1;
 			//mesh.position.x = 10;
 			//mesh.position.y = 1;
 			scene.add(mesh);
@@ -255,27 +255,53 @@ function onMouseDown(event) {
 	}
 }
 
+function debugShowPoint(pos) {
+		//for debug put sphere on intersect point
+		const geometry = new THREE.SphereGeometry(0.01);
+		const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+		const mesh = new THREE.Mesh(geometry, material);
+		mesh.position.set(...pos);
+		scene.add(mesh);
+}
+
 function onPointerMove(event) {
 	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
 	pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
 	if (dragging) {
 		// cast ray to find new grab point
-		const intersect = new THREE.Vector3();
+		const newGrabPoint = new THREE.Vector3();
 		raycaster.setFromCamera(pointer, camera);
-		raycaster.ray.intersectPlane(plane, intersect);
+		raycaster.ray.intersectPlane(plane, newGrabPoint);
+		//debugShowPoint(currentSelection.position);
 
-		let change = grabPoint;
-		change.sub(intersect);
+		let change = grabPoint.clone();
+		change.sub(newGrabPoint);
+		//debugShowPoint(grabPoint);
 
 		if (ctrlKey) {
-			currentSelection.rotateY(change.x);
-			currentSelection.rotateX(change.y);
+			let a = grabPoint.clone().sub(currentSelection.position);
+			let b = newGrabPoint.clone().sub(currentSelection.position);
 
+
+			let localA = a.clone();
+			let localB = b.clone();
+			//currentSelection.worldToLocal(a);
+			//currentSelection.worldToLocal(b);
+
+			//let localC = currentSelection.position.clone();
+			//currentSelection.worldToLocal(localC);
+
+			//let ba = localB.clone().cross(localA);
+			let ab = localA.clone().cross(localB);
+
+
+			let r = localB.angleTo(localA);
+			currentSelection.rotateZ(r * Math.sign(ab.z));
 		} else {
 			currentSelection.position.sub(change);
 		}
-		grabPoint = intersect;
+		grabPoint = newGrabPoint;
 	}
 }
 
