@@ -307,4 +307,4 @@ function onPointerMove(event) {
 
 let temp = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
 
-export { temp as scene };
+export { temp as controller };
