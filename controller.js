@@ -25,7 +25,7 @@ let shiftKey = false, ctrlKey = false, altKey = false;
 function setup() {
 	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
 	camera.position.z = 1.1;
-	//camera.position.x = 10.9;
+	//camera.position.x = 10;
 	//camera.rotateY(-0.2);
 
 	scene = new THREE.Scene();
@@ -110,12 +110,10 @@ function addImage(URL) {
 		const mesh = new THREE.Mesh(geometry, material);
 		//mesh.position.z = 0.1;
 		//mesh.position.x = 10;
-		//mesh.position.y = 1;
+		//mesh.position.y = 0.5;
 		scene.add(mesh);
 		meshes.push(mesh);
 	});
-
-
 }
 
 function add() {
@@ -210,12 +208,6 @@ function onMouseDown(event) {
 
 		grabPoint = intersect;
 
-		//for debug put sphere on intersect point
-		//const geometry = new THREE.SphereGeometry(0.05);
-		//const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
-		//const mesh1 = new THREE.Mesh(geometry, material);
-		//mesh1.position.set(...intersect);
-		//scene.add(mesh1);
 	} else {
 		//control.detach();
 		currentSelection = null;
@@ -224,12 +216,12 @@ function onMouseDown(event) {
 }
 
 function debugShowPoint(pos) {
-		//for debug put sphere on intersect point
-		const geometry = new THREE.SphereGeometry(0.01);
-		const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
-		const mesh = new THREE.Mesh(geometry, material);
-		mesh.position.set(...pos);
-		scene.add(mesh);
+	//for debug put sphere on intersect point
+	const geometry = new THREE.SphereGeometry(0.01);
+	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+	const mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(...pos);
+	scene.add(mesh);
 }
 
 function onPointerMove(event) {
@@ -248,23 +240,13 @@ function onPointerMove(event) {
 		//debugShowPoint(grabPoint);
 
 		if (ctrlKey) {
-			let a = grabPoint.clone().sub(currentSelection.position);
-			let b = newGrabPoint.clone().sub(currentSelection.position);
+			let a = grabPoint.clone();
+			let b = newGrabPoint.clone();
+			currentSelection.worldToLocal(a);
+			currentSelection.worldToLocal(b);
+			let ab = a.clone().cross(b);
 
-
-			let localA = a.clone();
-			let localB = b.clone();
-			//currentSelection.worldToLocal(a);
-			//currentSelection.worldToLocal(b);
-
-			//let localC = currentSelection.position.clone();
-			//currentSelection.worldToLocal(localC);
-
-			//let ba = localB.clone().cross(localA);
-			let ab = localA.clone().cross(localB);
-
-
-			let r = localB.angleTo(localA);
+			let r = b.angleTo(a);
 			currentSelection.rotateZ(r * Math.sign(ab.z));
 		} else {
 			currentSelection.position.sub(change);
