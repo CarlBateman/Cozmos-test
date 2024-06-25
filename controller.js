@@ -123,9 +123,7 @@ function addVideo(URL) {
 
 function addImage(URL) {
 	const loader = new THREE.TextureLoader();
-	const textureLoad = loader.loadAsync(URL);
-
-	textureLoad.then(function (texture) {
+	const textureLoad = loader.loadAsync(URL).then(function (texture) {
 		const ratio = texture.image.height / texture.image.width;
 
 		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
