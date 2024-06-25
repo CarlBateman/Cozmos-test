@@ -123,32 +123,22 @@ function addVideo(URL) {
 
 function addImage(URL) {
 	const loader = new THREE.TextureLoader();
+	const textureLoad = loader.loadAsync(URL);
 
-	// load a resource
-	loader.load(
-		URL,
+	textureLoad.then(function (texture) {
+		const ratio = texture.image.height / texture.image.width;
 
-		// onLoad callback
-		function (texture) {
-			const ratio = texture.image.height / texture.image.width;
+		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+		const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+		const mesh = new THREE.Mesh(geometry, material);
+		//mesh.position.z = 0.1;
+		//mesh.position.x = 10;
+		//mesh.position.y = 1;
+		scene.add(mesh);
+		meshes.push(mesh);
+	});
 
-			const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
-			const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-			const mesh = new THREE.Mesh(geometry, material);
-			//mesh.position.z = 0.1;
-			//mesh.position.x = 10;
-			//mesh.position.y = 1;
-			scene.add(mesh);
-			meshes.push(mesh);
-		},
 
-		undefined, // onProgress callback currently not supported
-
-		// onError callback
-		function (err) {
-			console.error('An error happened.');
-		}
-	);
 }
 
 function add() {
