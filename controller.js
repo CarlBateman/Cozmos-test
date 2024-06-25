@@ -79,27 +79,6 @@ function isValidUrl(string) {
 	}
 }
 
-function getType(URL) {
-	const extension = URL.split('.').pop();
-	switch (extension) {
-		case "mp4":
-		case "mov":
-			return "video";
-	}
-
-	switch (extension) {
-		case "jpg":
-		case "jpeg":
-		case "gif":
-		case "bmp":
-		case "img":
-			return "image";
-	}
-
-
-	return "invalid";
-}
-
 function addVideo(URL) {
 	const videoElement = document.createElement("video");
 	videoElement.crossOrigin = "anonymous";
@@ -141,17 +120,18 @@ function addImage(URL) {
 
 function add() {
 	const txtURL = document.getElementById("txtURL").value;
-	if (isValidUrl(txtURL)) {
-		switch (getType(txtURL)) {
-			case "video":
+	fetch(txtURL).then(function (response) {
+		const type = (response.headers.get("Content-Type"));
+		switch (true) {
+			case type.includes("video"):
 				addVideo(txtURL)
 				break;
-			case "image":
+			case type.includes("image"):
 				addImage(txtURL)
 				break;
 			default:
 		}
-	}
+	});
 }
 
 function animation(time) {
