@@ -116,20 +116,43 @@ function addImage(URL) {
 	});
 }
 
+
+function checkUrlExists(url) {
+	return fetch(url, { method: 'HEAD' })
+		.then(function (response) {
+			return response.ok;
+		})
+		.catch(function (error) {
+			return false;
+		});
+}
+
 function add() {
 	const txtURL = document.getElementById("txtURL").value;
-	fetch(txtURL).then(function (response) {
-		const type = (response.headers.get("Content-Type"));
-		switch (true) {
-			case type.includes("video"):
-				addVideo(txtURL)
-				break;
-			case type.includes("image"):
-				addImage(txtURL)
-				break;
-			default:
-		}
-	});
+	if (isValidUrl(txtURL)) {
+		checkUrlExists(txtURL).then(function (exists) {
+			if (exists) {
+				addImageOrVideo(txtURL);
+			}
+		});
+	}
+}
+
+
+function addImageOrVideo(txtURL) {
+	fetch(txtURL).then(
+		function (response) {
+			const type = (response.headers.get("Content-Type"));
+			switch (true) {
+				case type.includes("video"):
+					addVideo(txtURL)
+					break;
+				case type.includes("image"):
+					addImage(txtURL)
+					break;
+				default:
+			}
+		})
 }
 
 function animation(time) {
