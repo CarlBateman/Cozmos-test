@@ -13,5 +13,4 @@ document.addEventListener('mouseup', controller.onMouseUp);
 document.addEventListener('keyup', controller.onKeyUp);
 document.addEventListener('keydown', controller.onKeyDown);
 
-//scene.add();
-// add box
+document.getElementById("control_options").addEventListener('mousedown', () => event.stopPropagation() );

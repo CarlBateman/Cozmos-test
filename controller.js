@@ -199,8 +199,6 @@ function onMouseUp(event) {
 }
 
 function onMouseDown(event) {
-	event.preventDefault();
-
 	const raycaster = new THREE.Raycaster();
 	raycaster.setFromCamera(pointer, camera);
 
