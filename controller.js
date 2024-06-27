@@ -81,34 +81,42 @@ function isValidUrl(string) {
 
 function checkUrlExists(txtURL) {
 	return fetch(txtURL, { method: 'HEAD' })
-		.then(function (response) {
-			return response.ok;
-		})
+		.then(
+			function (response) {
+				return response.ok;
+			})
 		.catch(function (error) {
 			return false;
 		});
 }
 
-function getVideoTexture(txtURL) {
+async function getVideoTexture(txtURL) {
 	const videoElement = document.createElement("video");
 	videoElement.crossOrigin = "anonymous";
 	videoElement.src = txtURL;
 	videoElement.load();
 	videoElement.controls = true;
 	videoElement.play();
-	videoElement.addEventListener("loadedmetadata", function (e) {
-		const ratio = this.videoHeight / this.videoWidth;
-		let texture = new THREE.VideoTexture(videoElement);
-		addMesh(texture, ratio);
-	}, false);
+
+	return new Promise(function (resolve) {
+		videoElement.addEventListener("loadedmetadata", function (e) {
+			const ratio = this.videoHeight / this.videoWidth;
+			let texture = new THREE.VideoTexture(videoElement);
+			//addMesh(texture, ratio);
+			resolve({ texture, ratio });
+			//return { texture, ratio };
+		}, false);
+	});
 }
 
 async function getImageTexture(txtURL) {
 	const loader = new THREE.TextureLoader();
-	loader.loadAsync(txtURL).then(function (texture) {
-		const ratio = texture.image.height / texture.image.width;
-		addMesh(texture, ratio);
-	});
+	return loader.loadAsync(txtURL).then(
+		function (texture) {
+			const ratio = texture.image.height / texture.image.width;
+			//addMesh(texture, ratio);
+			return { texture, ratio };
+		});
 }
 
 function addMesh(texture, ratio) {
@@ -128,23 +136,25 @@ function add() {
 	if (isValidUrl(txtURL)) {
 		checkUrlExists(txtURL).then(function (exists) {
 			if (exists) {
-				addImageOrVideo(txtURL);
+				addImageOrVideo(txtURL).then(
+					function (response) {
+						addMesh(response.texture, response.ratio);
+					});
 			}
 		});
 	}
 }
 
-
 async function addImageOrVideo(txtURL) {
-	fetch(txtURL).then(
+	return fetch(txtURL).then(
 		function (response) {
 			const type = (response.headers.get("Content-Type"));
 			switch (true) {
 				case type.includes("video"):
-					getVideoTexture(txtURL);
+					return getVideoTexture(txtURL);
 					break;
 				case type.includes("image"):
-					getImageTexture(txtURL);
+					return getImageTexture(txtURL);
 					break;
 				default:
 			}
