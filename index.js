@@ -4,7 +4,7 @@ controller.setup();
 
 
 let btnAddVideo = document.getElementById('button');
-btnAddVideo.addEventListener('click', controller.add);
+btnAddVideo.addEventListener('click', controller.addTexturedMesh);
 
 window.addEventListener('resize', controller.onWindowResize);
 document.addEventListener('pointermove', controller.onPointerMove);

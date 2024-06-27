@@ -102,9 +102,7 @@ function getVideoTexture(txtURL) {
 		videoElement.addEventListener("loadedmetadata", function (e) {
 			const ratio = this.videoHeight / this.videoWidth;
 			let texture = new THREE.VideoTexture(videoElement);
-			//addMesh(texture, ratio);
 			resolve({ texture, ratio });
-			//return { texture, ratio };
 		}, false);
 	});
 }
@@ -118,33 +116,7 @@ function getImageTexture(txtURL) {
 		});
 }
 
-function addMesh(texture, ratio) {
-	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
-
-	const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
-	const mesh = new THREE.Mesh(geometry, material);
-	//mesh.position.z = 0.1;
-	//mesh.position.x = 10;
-	//mesh.position.y = 0.5;
-	scene.add(mesh);
-	meshes.push(mesh);
-}
-
-function add() {
-	const txtURL = document.getElementById("txtURL").value;
-	if (isValidUrl(txtURL)) {
-		checkUrlExists(txtURL).then(function (exists) {
-			if (exists) {
-				addImageOrVideo(txtURL).then(
-					function (response) {
-						addMesh(response.texture, response.ratio);
-					});
-			}
-		});
-	}
-}
-
-function addImageOrVideo(txtURL) {
+function getImageOrVideoTexture(txtURL) {
 	return fetch(txtURL).then(
 		function (response) {
 			const type = (response.headers.get("Content-Type"));
@@ -158,6 +130,33 @@ function addImageOrVideo(txtURL) {
 				default:
 			}
 		})
+}
+
+function addMesh(texture, ratio) {
+	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
+
+	const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+	const mesh = new THREE.Mesh(geometry, material);
+	//mesh.position.z = 0.1;
+	//mesh.position.x = 10;
+	//mesh.position.y = 0.5;
+	//mesh.rotation.y = 0.5;
+	scene.add(mesh);
+	meshes.push(mesh);
+}
+
+function addTexturedMesh() {
+	const txtURL = document.getElementById("txtURL").value;
+	if (isValidUrl(txtURL)) {
+		checkUrlExists(txtURL).then(function (exists) {
+			if (exists) {
+				getImageOrVideoTexture(txtURL).then(
+					function (response) {
+						addMesh(response.texture, response.ratio);
+					});
+			}
+		});
+	}
 }
 
 function animation() {
@@ -281,6 +280,6 @@ function onPointerMove(event) {
 	}
 }
 
-let controller = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
+let controller = { setup, addTexturedMesh, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
 
 export { controller };
