@@ -79,52 +79,48 @@ function isValidUrl(string) {
 	}
 }
 
-function addVideo(URL) {
-	const videoElement = document.createElement("video");
-	videoElement.crossOrigin = "anonymous";
-	videoElement.src = URL;
-	videoElement.load();
-	videoElement.controls = true;
-	videoElement.play();
-	videoElement.addEventListener("loadedmetadata", function (e) {
-		const ratio = this.videoHeight / this.videoWidth;
-		let texture = new THREE.VideoTexture(videoElement);
-
-		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
-		const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
-
-		const mesh = new THREE.Mesh(geometry, material);
-
-		scene.add(mesh);
-		meshes.push(mesh);
-	}, false);
-}
-
-function addImage(URL) {
-	const loader = new THREE.TextureLoader();
-	const textureLoad = loader.loadAsync(URL).then(function (texture) {
-		const ratio = texture.image.height / texture.image.width;
-
-		const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
-		const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-		const mesh = new THREE.Mesh(geometry, material);
-		//mesh.position.z = 0.1;
-		//mesh.position.x = 10;
-		//mesh.position.y = 0.5;
-		scene.add(mesh);
-		meshes.push(mesh);
-	});
-}
-
-
-function checkUrlExists(url) {
-	return fetch(url, { method: 'HEAD' })
+function checkUrlExists(txtURL) {
+	return fetch(txtURL, { method: 'HEAD' })
 		.then(function (response) {
 			return response.ok;
 		})
 		.catch(function (error) {
 			return false;
 		});
+}
+
+function getVideoTexture(txtURL) {
+	const videoElement = document.createElement("video");
+	videoElement.crossOrigin = "anonymous";
+	videoElement.src = txtURL;
+	videoElement.load();
+	videoElement.controls = true;
+	videoElement.play();
+	videoElement.addEventListener("loadedmetadata", function (e) {
+		const ratio = this.videoHeight / this.videoWidth;
+		let texture = new THREE.VideoTexture(videoElement);
+		addMesh(texture, ratio);
+	}, false);
+}
+
+async function getImageTexture(txtURL) {
+	const loader = new THREE.TextureLoader();
+	loader.loadAsync(txtURL).then(function (texture) {
+		const ratio = texture.image.height / texture.image.width;
+		addMesh(texture, ratio);
+	});
+}
+
+function addMesh(texture, ratio) {
+	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
+
+	const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+	const mesh = new THREE.Mesh(geometry, material);
+	//mesh.position.z = 0.1;
+	//mesh.position.x = 10;
+	//mesh.position.y = 0.5;
+	scene.add(mesh);
+	meshes.push(mesh);
 }
 
 function add() {
@@ -139,23 +135,23 @@ function add() {
 }
 
 
-function addImageOrVideo(txtURL) {
+async function addImageOrVideo(txtURL) {
 	fetch(txtURL).then(
 		function (response) {
 			const type = (response.headers.get("Content-Type"));
 			switch (true) {
 				case type.includes("video"):
-					addVideo(txtURL)
+					getVideoTexture(txtURL);
 					break;
 				case type.includes("image"):
-					addImage(txtURL)
+					getImageTexture(txtURL);
 					break;
 				default:
 			}
 		})
 }
 
-function animation(time) {
+function animation() {
 	renderer.render(scene, camera);
 	composer.render();
 }
@@ -276,6 +272,6 @@ function onPointerMove(event) {
 	}
 }
 
-let temp = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
+let controller = { setup, add, onMouseDown, onWindowResize, onPointerMove, onMouseUp, onKeyUp, onKeyDown };
 
-export { temp as controller };
+export { controller };
