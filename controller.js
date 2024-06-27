@@ -90,7 +90,7 @@ function checkUrlExists(txtURL) {
 		});
 }
 
-async function getVideoTexture(txtURL) {
+function getVideoTexture(txtURL) {
 	const videoElement = document.createElement("video");
 	videoElement.crossOrigin = "anonymous";
 	videoElement.src = txtURL;
@@ -109,12 +109,11 @@ async function getVideoTexture(txtURL) {
 	});
 }
 
-async function getImageTexture(txtURL) {
+function getImageTexture(txtURL) {
 	const loader = new THREE.TextureLoader();
 	return loader.loadAsync(txtURL).then(
 		function (texture) {
 			const ratio = texture.image.height / texture.image.width;
-			//addMesh(texture, ratio);
 			return { texture, ratio };
 		});
 }
@@ -145,7 +144,7 @@ function add() {
 	}
 }
 
-async function addImageOrVideo(txtURL) {
+function addImageOrVideo(txtURL) {
 	return fetch(txtURL).then(
 		function (response) {
 			const type = (response.headers.get("Content-Type"));
