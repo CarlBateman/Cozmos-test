@@ -7,6 +7,7 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
+//import { getImageOrVideoTexture } from './loadtexture.js';
 
 let camera, scene, renderer;
 let pointer = new THREE.Vector2();
@@ -117,19 +118,38 @@ function getImageTexture(txtURL) {
 }
 
 function getImageOrVideoTexture(txtURL) {
-	return fetch(txtURL).then(
+	return new Promise(function (resolve) {
+
+		if (isValidUrl(txtURL)) {
+			checkUrlExists(txtURL).then(function (exists) {
+				if (exists) {
+
+					return fetch(txtURL).then(
+						function (response) {
+							const type = (response.headers.get("Content-Type"));
+							switch (true) {
+								case type.includes("video"):
+									resolve( getVideoTexture(txtURL));
+									break;
+								case type.includes("image"):
+									resolve( getImageTexture(txtURL));
+									break;
+								default:
+							}
+						})
+
+				}
+			});
+		}
+	});
+}
+
+function addTexturedMesh(e) {
+	const txtURL = document.getElementById("txtURL").value;
+	getImageOrVideoTexture(txtURL).then(
 		function (response) {
-			const type = (response.headers.get("Content-Type"));
-			switch (true) {
-				case type.includes("video"):
-					return getVideoTexture(txtURL);
-					break;
-				case type.includes("image"):
-					return getImageTexture(txtURL);
-					break;
-				default:
-			}
-		})
+			addMesh(response.texture, response.ratio);
+		});
 }
 
 function addMesh(texture, ratio) {
@@ -145,19 +165,6 @@ function addMesh(texture, ratio) {
 	meshes.push(mesh);
 }
 
-function addTexturedMesh() {
-	const txtURL = document.getElementById("txtURL").value;
-	if (isValidUrl(txtURL)) {
-		checkUrlExists(txtURL).then(function (exists) {
-			if (exists) {
-				getImageOrVideoTexture(txtURL).then(
-					function (response) {
-						addMesh(response.texture, response.ratio);
-					});
-			}
-		});
-	}
-}
 
 function animation() {
 	renderer.render(scene, camera);
