@@ -73,16 +73,15 @@ function setup() {
 
 function addTexturedMesh(e) {
 	const txtURL = document.getElementById("txtURL").value;
-	getImageOrVideoTexture(txtURL).then(
-		function (response) {
-			addMesh(response.texture, response.ratio);
-		});
+	getImageOrVideoTexture(txtURL)
+		.then(addMesh);
 }
 
-function addMesh(texture, ratio) {
-	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: texture });
+function addMesh(response) {
 
-	const geometry = new THREE.PlaneGeometry(0.5, 0.5 * ratio);
+	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: response.texture });
+
+	const geometry = new THREE.PlaneGeometry(0.5, 0.5 * response.ratio);
 	const mesh = new THREE.Mesh(geometry, material);
 	//mesh.position.z = 0.1;
 	//mesh.position.x = 10;
