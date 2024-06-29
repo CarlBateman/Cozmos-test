@@ -78,7 +78,6 @@ function addTexturedMesh(e) {
 }
 
 function addMesh(response) {
-
 	const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: response.texture });
 
 	const geometry = new THREE.PlaneGeometry(0.5, 0.5 * response.ratio);
