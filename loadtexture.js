@@ -14,11 +14,11 @@ function checkUrlExists(txtURL) {
 	return fetch(txtURL, { method: 'HEAD' })
 		.then(
 			function (response) {
-				return response.ok;
+				return txtURL;
 			})
-		.catch(function (error) {
-			return false;
-		});
+	//		.catch(function (error) {
+	//			return false;
+	//		});
 }
 
 function getVideoTexture(txtURL) {
@@ -47,30 +47,41 @@ function getImageTexture(txtURL) {
 		});
 }
 
+function getTexture(response, txtURL) {
+	const type = (response.headers.get("Content-Type"));
+	switch (true) {
+		case type.includes("video"):
+			return (getVideoTexture(txtURL));
+			break;
+		case type.includes("image"):
+			return (getImageTexture(txtURL));
+			break;
+		default:
+	}
+}
+
 function getImageOrVideoTexture(txtURL) {
 	return new Promise(function (resolve) {
-
-		if (isValidUrl(txtURL)) {
-			checkUrlExists(txtURL).then(function (exists) {
-				if (exists) {
-
-					return fetch(txtURL).then(
-						function (response) {
-							const type = (response.headers.get("Content-Type"));
-							switch (true) {
-								case type.includes("video"):
-									resolve(getVideoTexture(txtURL));
-									break;
-								case type.includes("image"):
-									resolve(getImageTexture(txtURL));
-									break;
-								default:
-							}
-						})
-
-				}
+			fetch(txtURL)
+			.then(function (response) {
+				resolve(getTexture(response, txtURL));
+			})
+			.catch(function (error) {
+				return false;
 			});
-		}
+	});
+}
+
+function getImageOrVideoTextureOLD(txtURL) {
+	return new Promise(function (resolve) {
+		if (!isValidUrl(txtURL)) return;
+
+		checkUrlExists(txtURL)
+			.then(function (txtURL) { return fetch(txtURL) })
+			.then(function (response) {
+				resolve(getTexture(response, txtURL));
+			}
+			);
 	});
 }
 
