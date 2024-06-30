@@ -16,9 +16,9 @@ function checkUrlExists(txtURL) {
 			function (response) {
 				return txtURL;
 			})
-	//		.catch(function (error) {
-	//			return false;
-	//		});
+			.catch(function (error) {
+				return "URL doesn't exist";
+			});
 }
 
 function getVideoTexture(txtURL) {
@@ -60,7 +60,7 @@ function getTexture(response, txtURL) {
 	}
 }
 
-function getImageOrVideoTexture(txtURL) {
+function getImageOrVideoTexture_XXX(txtURL) {
 	return new Promise(function (resolve) {
 			fetch(txtURL)
 			.then(function (response) {
@@ -72,9 +72,9 @@ function getImageOrVideoTexture(txtURL) {
 	});
 }
 
-function getImageOrVideoTextureOLD(txtURL) {
-	return new Promise(function (resolve) {
-		if (!isValidUrl(txtURL)) return;
+function getImageOrVideoTexture(txtURL) {
+	return new Promise(function (resolve, reject) {
+		if (!isValidUrl(txtURL)) reject("Invalid URL");
 
 		checkUrlExists(txtURL)
 			.then(function (txtURL) { return fetch(txtURL) })

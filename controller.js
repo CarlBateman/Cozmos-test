@@ -71,10 +71,15 @@ function setup() {
 	composer.addPass(effectFXAA);
 }
 
+function failed(value) {
+	console.log(value);
+}
+
 function addTexturedMesh(e) {
 	const txtURL = document.getElementById("txtURL").value;
 	getImageOrVideoTexture(txtURL)
-		.then(addMesh);
+		.then(addMesh, failed);
+
 }
 
 function addMesh(response) {
