@@ -17,7 +17,8 @@ function checkUrlExists(txtURL) {
 				return txtURL;
 			})
 			.catch(function (error) {
-				return "URL doesn't exist";
+				throw new Error(error);
+				return false;
 			});
 }
 
@@ -60,28 +61,14 @@ function getTexture(response, txtURL) {
 	}
 }
 
-function getImageOrVideoTexture_XXX(txtURL) {
-	return new Promise(function (resolve) {
-			fetch(txtURL)
-			.then(function (response) {
-				resolve(getTexture(response, txtURL));
-			})
-			.catch(function (error) {
-				return false;
-			});
-	});
-}
-
 function getImageOrVideoTexture(txtURL) {
 	return new Promise(function (resolve, reject) {
 		if (!isValidUrl(txtURL)) reject("Invalid URL");
 
 		checkUrlExists(txtURL)
 			.then(function (txtURL) { return fetch(txtURL) })
-			.then(function (response) {
-				resolve(getTexture(response, txtURL));
-			}
-			);
+			.then(function (response) { resolve(getTexture(response, txtURL)); })
+			.catch(function (value) { reject(value); });
 	});
 }
 
